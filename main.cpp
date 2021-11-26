@@ -4,6 +4,8 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <stdexcept>
+#include <locale.h>
 
 using namespace std;
 
