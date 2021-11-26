@@ -1,5 +1,6 @@
 #include "Tokenizer.hpp"
 
+#include <iostream>
 #include <stdexcept>
 
 using namespace std;
