@@ -1,12 +1,11 @@
 #include "Tokenizer.hpp"
 
+#include <iostream>
 #include <stdexcept>
 
 using namespace std;
 
 namespace simpleparser {
-
-using namespace std;
 
 vector<Token> Tokenizer::parse(const string &inProgram) {
     vector<Token> tokens;
@@ -18,6 +17,9 @@ vector<Token> Tokenizer::parse(const string &inProgram) {
         if (currentToken.mType == ESCAPE_SEQ) {
             escapeSeq(currCh, currentToken);
             continue;
+        } else if (currentToken.mType == POTENTIAL_COMMENT && currCh != '/') {
+            currentToken.mType = OPERATOR;
+            endToken(currentToken, tokens);
         }
 
         switch (currCh) {
@@ -58,9 +60,19 @@ vector<Token> Tokenizer::parse(const string &inProgram) {
                 }
                 break;
 
+            case '/':
+                if (currentToken.mType == STRING_LITERAL) {
+                    currentToken.mText.push_back(currCh);
+                } else if (currentToken.mType == POTENTIAL_COMMENT) {
+                    currentToken.mType == COMMENT;
+                    currentToken.mText.erase();
+                } else {
+                    currentToken.mType = POTENTIAL_COMMENT;
+                    currentToken.mText.push_back(currCh);
+                }
+                break;
             case '!':
             case '#' ... '-':  // puntuadores
-            case '/':
             case ':' ... '?':  // operadores
             case '[':
             case ']':
@@ -118,15 +130,22 @@ vector<Token> Tokenizer::parse(const string &inProgram) {
 }
 
 void Tokenizer::endToken(Token &token, vector<Token> &tokens) {
-    if (token.mType != WHITESPACE) {
+    if (token.mType == COMMENT) {
+        cout << "Ignore Comment " << token.mText << "\n";
+    } else if (token.mType != WHITESPACE) {
         tokens.push_back(token);
-    } else if (token.mType == POTENTIAL_DOUBLE) {
+    }
+
+    if (token.mType == POTENTIAL_DOUBLE) {
         if (token.mText.compare(".") == 0) {
             token.mType = OPERATOR;
         } else {
             token.mType = DOUBLE_LITERAL;
         }
-        tokens.push_back(token);
+    } else if (token.mType == IDENTIFIER) {
+        if (keywords.find(token.mText) != keywords.end()) {
+            token.mType = KEYWORD;
+        }
     }
 
     token.mType = WHITESPACE;
@@ -156,6 +175,11 @@ void Tokenizer::escapeSeq(char c, Token &token) {
     }
 
     token.mType = STRING_LITERAL;
+}
+
+void Token::DebugPrint() {
+    cout << "Token( " << mLineNumber << ". " << tokenTypeNames[mType] << ", \""
+         << mText << "\") \n";
 }
 
 }  // namespace simpleparser
