@@ -65,6 +65,7 @@ void endToken(Token &token, vector<Token> &tokens) {
         tokens.push_back(token);
     } else if (token.mType == IDENTIFIER) {
         if (keywords.find(token.mText) != keywords.end()) {
+        	cout<<"aa"<<endl;
             token.mType = KEYWORD;
         }
     }
@@ -215,6 +216,52 @@ string readFile(string path) {
 
 void printFile(string ss) { cout << ss; }
 
+void conteo(vector<Token> tokens){
+	
+	int  WHITESPACEnum = 0, KEYWORDnum = 0, IDENTIFIERnum = 0, INTERGER_LITERALnum = 0,  DOUBLE_LITERALnum = 0;
+	
+	int STRING_LITERALnum = 0, OPERATORnum = 0, ESCAPE_SEQnum = 0, POTENTIAL_DOUBLEnum = 0;
+    
+   
+	for (Token t : tokens) {
+	
+		
+		switch(t.mType){
+			
+			case KEYWORD:
+				KEYWORDnum++;
+				break;
+			case IDENTIFIER:
+				IDENTIFIERnum++;
+				break;
+			case INTERGER_LITERAL:
+				INTERGER_LITERALnum++;
+				break;
+			case DOUBLE_LITERAL:
+				DOUBLE_LITERALnum++;
+				break;
+			case STRING_LITERAL:
+				STRING_LITERALnum++;
+				break;
+			case OPERATOR:
+				OPERATORnum++;
+				break;
+				
+			
+		}
+		
+		
+	 }
+	 
+	 cout<<"Cantidad de 'KeyWord' --->"<<KEYWORDnum<<endl;
+	 cout<<"Cantidad de 'Identifiers' --->"<<IDENTIFIERnum<<endl;
+	 cout<<"Cantidad de 'Integer_Literal' --->"<<INTERGER_LITERALnum<<endl;
+	 cout<<"Cantidad de 'Double_Literal' --->"<<DOUBLE_LITERALnum<<endl;
+	 cout<<"Cantidad de 'String_Literal' --->"<<STRING_LITERALnum<<endl;
+	 cout<<"Cantidad de 'Operator' --->"<<OPERATORnum<<endl;
+	
+}
+
 int main(int argc, char *argv[]) {
 	
 	setlocale(LC_CTYPE, "Spanish");
@@ -256,6 +303,7 @@ int main(int argc, char *argv[]) {
 				
 			case 3:
 				system("cls");
+				conteo(tokens);
 				system("pause");
 				break;
 				
