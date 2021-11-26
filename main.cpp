@@ -51,6 +51,8 @@ class Token {
    public:
     enum TokenType mType { WHITESPACE };
     string mText;
+    size_t mStartOffset;
+    size_t mEndOffset{0};
     size_t mLineNumber{0};
 };
 
@@ -61,6 +63,7 @@ void endToken(Token &token, vector<Token> &tokens) {
         } else {
             token.mType = DOUBLE_LITERAL;
         }
+        tokens.push_back(token);
     } else if (token.mType == IDENTIFIER) {
         if (keywords.find(token.mText) != keywords.end()) {
             token.mType = KEYWORD;
@@ -112,9 +115,6 @@ vector<Token> parse(const string &inProgram) {
         if (currentToken.mType == ESCAPE_SEQ) {
             escapeSeq(currCh, currentToken);
             continue;
-        } else if (currentToken.mType == POTENTIAL_COMMENT && currCh != '/') {
-            currentToken.mType = OPERATOR;
-            endToken(currentToken, tokens);
         }
 
         switch (currCh) {
@@ -233,18 +233,14 @@ vector<Token> parse(const string &inProgram) {
 
 string readFile(string path) {
     ifstream file(path);
-    if (file.is_open()) {
-        stringstream ss;
-        ss << file.rdbuf();
-        return ss.str();
-    } else {
-        return "er";
-    }
+    stringstream ss;
+    ss << file.rdbuf();
+    return ss.str();
 }
 
 void printFile(string ss) { cout << ss; }
 
-void conteo(vector<Token> tokens) {
+void conteo2(vector<Token> tokens) {
     int WHITESPACEnum = 0, KEYWORDnum = 0, IDENTIFIERnum = 0,
         INTERGER_LITERALnum = 0, DOUBLE_LITERALnum = 0;
 
@@ -282,16 +278,125 @@ void conteo(vector<Token> tokens) {
     cout << "Cantidad de 'Operator' --->" << OPERATORnum << endl;
 }
 
-int main(int argc, char *argv[]) {
-    setlocale(LC_CTYPE, "Spanish");
+void conteo(vector<Token> tokens) {
+    int WHITESPACEnum = 0, KEYWORDnum = 0, IDENTIFIERnum = 0,
+        INTERGER_LITERALnum = 0, DOUBLE_LITERALnum = 0;
 
-    if (argv[1] == NULL) {
-        cout << "Recuerda que el nombre del archivo lo debes pasar como "
-                "parámetro"
-             << endl;
-        return -1;
+    int STRING_LITERALnum = 0, OPERATORnum = 0, ESCAPE_SEQnum = 0,
+        POTENTIAL_DOUBLEnum = 0;
+
+    for (Token t : tokens) {
+        switch (t.mType) {
+            case KEYWORD:
+                KEYWORDnum++;
+                break;
+            case IDENTIFIER:
+                IDENTIFIERnum++;
+                break;
+            case INTERGER_LITERAL:
+                INTERGER_LITERALnum++;
+                break;
+            case DOUBLE_LITERAL:
+                DOUBLE_LITERALnum++;
+                break;
+            case STRING_LITERAL:
+                STRING_LITERALnum++;
+                break;
+            case OPERATOR:
+                OPERATORnum++;
+                break;
+        }
+    }
+    cout << "++++++++++++++++++++++++++++++++++++++++++++++" << endl;
+    cout << "+         TIPO                     CANTIDAD  +" << endl;
+    cout << "+        KeyWord                       " << KEYWORDnum << "     +"
+         << endl;
+    cout << "+        Identifiers                   " << IDENTIFIERnum
+         << "    +" << endl;
+    cout << "+        Integer_Literal               " << INTERGER_LITERALnum
+         << "     +" << endl;
+    cout << "+        Double_Literal                " << DOUBLE_LITERALnum
+         << "     +" << endl;
+    cout << "+        String_Literal                " << STRING_LITERALnum
+         << "     +" << endl;
+    cout << "+        Operator                      " << OPERATORnum << "    +"
+         << endl;
+    cout << "++++++++++++++++++++++++++++++++++++++++++++++" << endl;
+}
+
+void archivo(vector<Token> tokens) {
+    int WHITESPACEnum = 0, KEYWORDnum = 0, IDENTIFIERnum = 0,
+        INTERGER_LITERALnum = 0, DOUBLE_LITERALnum = 0;
+
+    int STRING_LITERALnum = 0, OPERATORnum = 0, ESCAPE_SEQnum = 0,
+        POTENTIAL_DOUBLEnum = 0;
+
+    for (Token t : tokens) {
+        switch (t.mType) {
+            case KEYWORD:
+                KEYWORDnum++;
+                break;
+            case IDENTIFIER:
+                IDENTIFIERnum++;
+                break;
+            case INTERGER_LITERAL:
+                INTERGER_LITERALnum++;
+                break;
+            case DOUBLE_LITERAL:
+                DOUBLE_LITERALnum++;
+                break;
+            case STRING_LITERAL:
+                STRING_LITERALnum++;
+                break;
+            case OPERATOR:
+                OPERATORnum++;
+                break;
+        }
+    }
+    ofstream file;
+    file.open("OutPut.txt");
+    file << "++++++++++++++++++++++++++++++++++++++++++++++\n" << endl;
+    file << "+         TIPO                     CANTIDAD  +\n" << endl;
+    file << "+        KeyWord                       " << KEYWORDnum
+         << "     +\n"
+         << endl;
+    file << "+        Identifiers                   " << IDENTIFIERnum
+         << "    +\n"
+         << endl;
+    file << "+        Integer_Literal               " << INTERGER_LITERALnum
+         << "     +\n"
+         << endl;
+    file << "+        Double_Literal                " << DOUBLE_LITERALnum
+         << "     +\n"
+         << endl;
+    file << "+        String_Literal                " << STRING_LITERALnum
+         << "     +\n"
+         << endl;
+    file << "+        Operator                      " << OPERATORnum
+         << "    +\n"
+         << endl;
+    file << "++++++++++++++++++++++++++++++++++++++++++++++\n" << endl;
+
+    file << "Token \t CODE \n";
+    for (Token t : tokens) {
+        file << t.mText << "\t" << t.mType << "\n";
     }
 
+    file << "Cantidad de 'KeyWord' --->" << KEYWORDnum << "\n" << endl;
+    file << "Cantidad de 'Identifiers' --->" << IDENTIFIERnum << "\n" << endl;
+    file << "Cantidad de 'Integer_Literal' --->" << INTERGER_LITERALnum << "\n"
+         << endl;
+    file << "Cantidad de 'Double_Literal' --->" << DOUBLE_LITERALnum << "\n"
+         << endl;
+    file << "Cantidad de 'String_Literal' --->" << STRING_LITERALnum << "\n"
+         << endl;
+    file << "Cantidad de 'Operator' --->" << OPERATORnum << "\n" << endl;
+
+    file.close();
+}
+
+int main(int argc, char *argv[]) {
+    setlocale(LC_CTYPE, "Spanish");
     int op;
     string path, buf;
     vector<Token> tokens;
@@ -300,12 +405,13 @@ int main(int argc, char *argv[]) {
     do {
         system("cls");
 
-        cout << "Menú principal" << endl;
+        cout << "Men� principal" << endl;
         cout << "1. Leer archivo" << endl;
         cout << "2. Mostrar datos clasificados" << endl;
         cout << "3. Mostrar tabla de contenido" << endl;
-        cout << "4. Salir" << endl;
-        cout << "Ingrese la opción" << endl;
+        cout << "4. Guardar Datos En un Archivo .txt" << endl;
+        cout << "5. Salir" << endl;
+        cout << "Ingrese la opci�n" << endl;
         cin >> op;
 
         switch (op) {
@@ -313,63 +419,51 @@ int main(int argc, char *argv[]) {
                 system("cls");
                 path = argv[1];
                 buf = readFile(path);
-                if (buf != "er") {
-                    tokens = parse(buf);
-                    cout << "> Archivo " << path << " leído correctamente\n"
-                         << endl;
-                    printFile(buf);
-                    system("pause");
-                } else {
-                    cout << "No se ha encontrado el archivo " << path
-                         << ", revise el argumento ingresado y vuelva a correr "
-                            "el programa\n"
-                         << endl;
-                    system("pause");
-                }
-
+                tokens = parse(buf);
+                cout << "> Archivo " << path << " le�do correctamente\n"
+                     << endl;
+                printFile(buf);
+                system("pause");
                 break;
 
             case 2:
                 system("cls");
-                if (tokens.empty()) {
-                    cout << "No se ha leído ningún archivo por el momento\n"
-                         << endl;
-                } else {
-                    cout << "Token \t CODE \n";
-                    for (Token t : tokens) {
-                        cout << t.mText << "\t" << t.mType << "\n";
-                    }
-                    cout << "\n";
-                    conteo(tokens);
+                cout << "Token \t CODE \n";
+                for (Token t : tokens) {
+                    cout << t.mText << "\t" << t.mType << "\n";
                 }
+                conteo2(tokens);
                 system("pause");
                 break;
 
             case 3:
                 system("cls");
-                if (tokens.empty()) {
-                    cout << "No se ha leído ningún archivo por el momento\n"
-                         << endl;
-                } else {
-                    cout << "Tablita" << endl;
-                }
+                conteo(tokens);
                 system("pause");
                 break;
 
             case 4:
                 system("cls");
+                archivo(tokens);
+                cout << "Archivo Creado Satisfactoriamente" << endl;
+                system("pause");
+                break;
+
+            case 5:
+                system("cls");
                 seguir = false;
                 cout << "El programa ha finalizado" << endl;
                 cout << "\nDesarrollado por:" << endl;
-                cout << " - Juan Sierra\n - Juan Bueno\n - Carlos Plaza\n - "
-                        "Santiago Gutiérrez\n - Diego Ochoa\n - Daniel Hilarión"
+                cout << " - Juan Sierra\n - Juan Bueno\n - Carlos Plaza\n "
+                        "- Santiago Guti�rrez\n - Diego Ochoa\n - Daniel "
+                        "Hilari�n"
                      << endl;
                 break;
 
             default:
                 system("cls");
-                cout << "Revise que lo ingresado sea uno de los números de las "
-                        "opciones del men�\n"
+                cout << "Revise que lo ingresado sea uno de los n�meros de "
+                        "las opciones del men�\n"
                      << endl;
                 system("pause");
                 break;
