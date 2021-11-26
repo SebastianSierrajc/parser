@@ -60,17 +60,18 @@ vector<Token> Tokenizer::parse(const string &inProgram) {
                 }
                 break;
 
-            case '/':
+            case '/':  // comentarios
                 if (currentToken.mType == STRING_LITERAL) {
                     currentToken.mText.push_back(currCh);
                 } else if (currentToken.mType == POTENTIAL_COMMENT) {
-                    currentToken.mType == COMMENT;
+                    currentToken.mType = COMMENT;
                     currentToken.mText.erase();
                 } else {
                     currentToken.mType = POTENTIAL_COMMENT;
                     currentToken.mText.push_back(currCh);
                 }
                 break;
+
             case '!':
             case '#' ... '-':  // puntuadores
             case ':' ... '?':  // operadores
@@ -89,15 +90,20 @@ vector<Token> Tokenizer::parse(const string &inProgram) {
 
             case ' ':  // espacios en blanco
             case '\t':
-                if (currentToken.mType == STRING_LITERAL) {
+                if (currentToken.mType == STRING_LITERAL ||
+                    currentToken.mType == COMMENT) {
                     currentToken.mText.push_back(currCh);
                 } else {
                     endToken(currentToken, tokens);
                 }
                 break;
+
             case '\r':  // saltos de linea
             case '\n':
                 currentToken.mLineNumber++;
+                if (currentToken.mType == COMMENT) {
+                    endToken(currentToken, tokens);
+                }
                 break;
 
             case '\\':
@@ -110,6 +116,7 @@ vector<Token> Tokenizer::parse(const string &inProgram) {
                     endToken(currentToken, tokens);
                 }
                 break;
+
             default:
                 if (currentToken.mType == WHITESPACE ||
                     currentToken.mType == INTERGER_LITERAL ||
@@ -117,7 +124,10 @@ vector<Token> Tokenizer::parse(const string &inProgram) {
                     endToken(currentToken, tokens);
                     currentToken.mType = IDENTIFIER;
                     currentToken.mText.push_back(currCh);
-                } else if (currentToken.mType == STRING_LITERAL) {
+
+                } else if (currentToken.mType == COMMENT) {
+                    currentToken.mText.push_back(currCh);
+                } else {
                     currentToken.mText.push_back(currCh);
                 }
                 break;
@@ -130,12 +140,6 @@ vector<Token> Tokenizer::parse(const string &inProgram) {
 }
 
 void Tokenizer::endToken(Token &token, vector<Token> &tokens) {
-    if (token.mType == COMMENT) {
-        cout << "Ignore Comment " << token.mText << "\n";
-    } else if (token.mType != WHITESPACE) {
-        tokens.push_back(token);
-    }
-
     if (token.mType == POTENTIAL_DOUBLE) {
         if (token.mText.compare(".") == 0) {
             token.mType = OPERATOR;
@@ -146,6 +150,12 @@ void Tokenizer::endToken(Token &token, vector<Token> &tokens) {
         if (keywords.find(token.mText) != keywords.end()) {
             token.mType = KEYWORD;
         }
+    }
+
+    if (token.mType == COMMENT) {
+        cout << "Comentario ignorado " << token.mText << "\n";
+    } else if (token.mType != WHITESPACE) {
+        tokens.push_back(token);
     }
 
     token.mType = WHITESPACE;

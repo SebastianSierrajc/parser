@@ -55,10 +55,6 @@ class Token {
 };
 
 void endToken(Token &token, vector<Token> &tokens) {
-    if (token.mType != WHITESPACE || token.mType != COMMENT) {
-        tokens.push_back(token);
-    }
-
     if (token.mType == POTENTIAL_DOUBLE) {
         if (token.mText.compare(".") == 0) {
             token.mType = OPERATOR;
@@ -67,9 +63,14 @@ void endToken(Token &token, vector<Token> &tokens) {
         }
     } else if (token.mType == IDENTIFIER) {
         if (keywords.find(token.mText) != keywords.end()) {
-        	cout<<"aa"<<endl;
             token.mType = KEYWORD;
         }
+    }
+
+    if (token.mType == COMMENT) {
+        cout << "Comentario ignorado: //" << token.mText << "\n";
+    } else if (token.mType != WHITESPACE) {
+        tokens.push_back(token);
     }
 
     token.mType = WHITESPACE;
@@ -109,7 +110,6 @@ vector<Token> parse(const string &inProgram) {
 
     for (char currCh : inProgram) {
         if (currentToken.mType == ESCAPE_SEQ) {
-            cout << currentToken.mText << " " << currCh << "\n";
             escapeSeq(currCh, currentToken);
             continue;
         } else if (currentToken.mType == POTENTIAL_COMMENT && currCh != '/') {
@@ -126,6 +126,7 @@ vector<Token> parse(const string &inProgram) {
                 }
                 currentToken.mText.push_back(currCh);
                 break;
+
             case '.':  // literales numricos flotantes
                 if (currentToken.mType == WHITESPACE) {
                     currentToken.mType = POTENTIAL_DOUBLE;
@@ -141,8 +142,8 @@ vector<Token> parse(const string &inProgram) {
                     currentToken.mText.push_back(currCh);
                     endToken(currentToken, tokens);
                 }
-
                 break;
+
             case '"':  // literales string
                 if (currentToken.mType != STRING_LITERAL) {
                     endToken(currentToken, tokens);
@@ -158,7 +159,7 @@ vector<Token> parse(const string &inProgram) {
                 if (currentToken.mType == STRING_LITERAL) {
                     currentToken.mText.push_back(currCh);
                 } else if (currentToken.mType == POTENTIAL_COMMENT) {
-                    currentToken.mType == COMMENT;
+                    currentToken.mType = COMMENT;
                     currentToken.mText.erase();
                 } else {
                     currentToken.mType = POTENTIAL_COMMENT;
@@ -181,17 +182,23 @@ vector<Token> parse(const string &inProgram) {
                     currentToken.mText.push_back(currCh);
                 }
                 break;
+
             case ' ':  // espacios en blanco
             case '\t':
-                if (currentToken.mType == STRING_LITERAL) {
+                if (currentToken.mType == STRING_LITERAL ||
+                    currentToken.mType == COMMENT) {
                     currentToken.mText.push_back(currCh);
                 } else {
                     endToken(currentToken, tokens);
                 }
                 break;
+
             case '\r':  // saltos de linea
             case '\n':
                 currentToken.mLineNumber++;
+                if (currentToken.mType == COMMENT) {
+                    endToken(currentToken, tokens);
+                }
                 break;
 
             case '\\':
@@ -204,6 +211,7 @@ vector<Token> parse(const string &inProgram) {
                     endToken(currentToken, tokens);
                 }
                 break;
+
             default:
                 if (currentToken.mType == WHITESPACE ||
                     currentToken.mType == INTERGER_LITERAL ||
@@ -236,50 +244,42 @@ string readFile(string path) {
 
 void printFile(string ss) { cout << ss; }
 
-void conteo(vector<Token> tokens){
-	
-	int  WHITESPACEnum = 0, KEYWORDnum = 0, IDENTIFIERnum = 0, INTERGER_LITERALnum = 0,  DOUBLE_LITERALnum = 0;
-	
-	int STRING_LITERALnum = 0, OPERATORnum = 0, ESCAPE_SEQnum = 0, POTENTIAL_DOUBLEnum = 0;
-    
-   
-	for (Token t : tokens) {
-	
-		
-		switch(t.mType){
-			
-			case KEYWORD:
-				KEYWORDnum++;
-				break;
-			case IDENTIFIER:
-				IDENTIFIERnum++;
-				break;
-			case INTERGER_LITERAL:
-				INTERGER_LITERALnum++;
-				break;
-			case DOUBLE_LITERAL:
-				DOUBLE_LITERALnum++;
-				break;
-			case STRING_LITERAL:
-				STRING_LITERALnum++;
-				break;
-			case OPERATOR:
-				OPERATORnum++;
-				break;
-				
-			
-		}
-		
-		
-	 }
-	 
-	 cout<<"Cantidad de 'KeyWord' --->"<<KEYWORDnum<<endl;
-	 cout<<"Cantidad de 'Identifiers' --->"<<IDENTIFIERnum<<endl;
-	 cout<<"Cantidad de 'Integer_Literal' --->"<<INTERGER_LITERALnum<<endl;
-	 cout<<"Cantidad de 'Double_Literal' --->"<<DOUBLE_LITERALnum<<endl;
-	 cout<<"Cantidad de 'String_Literal' --->"<<STRING_LITERALnum<<endl;
-	 cout<<"Cantidad de 'Operator' --->"<<OPERATORnum<<endl;
-	
+void conteo(vector<Token> tokens) {
+    int WHITESPACEnum = 0, KEYWORDnum = 0, IDENTIFIERnum = 0,
+        INTERGER_LITERALnum = 0, DOUBLE_LITERALnum = 0;
+
+    int STRING_LITERALnum = 0, OPERATORnum = 0, ESCAPE_SEQnum = 0,
+        POTENTIAL_DOUBLEnum = 0;
+
+    for (Token t : tokens) {
+        switch (t.mType) {
+            case KEYWORD:
+                KEYWORDnum++;
+                break;
+            case IDENTIFIER:
+                IDENTIFIERnum++;
+                break;
+            case INTERGER_LITERAL:
+                INTERGER_LITERALnum++;
+                break;
+            case DOUBLE_LITERAL:
+                DOUBLE_LITERALnum++;
+                break;
+            case STRING_LITERAL:
+                STRING_LITERALnum++;
+                break;
+            case OPERATOR:
+                OPERATORnum++;
+                break;
+        }
+    }
+
+    cout << "Cantidad de 'KeyWord' --->" << KEYWORDnum << endl;
+    cout << "Cantidad de 'Identifiers' --->" << IDENTIFIERnum << endl;
+    cout << "Cantidad de 'Integer_Literal' --->" << INTERGER_LITERALnum << endl;
+    cout << "Cantidad de 'Double_Literal' --->" << DOUBLE_LITERALnum << endl;
+    cout << "Cantidad de 'String_Literal' --->" << STRING_LITERALnum << endl;
+    cout << "Cantidad de 'Operator' --->" << OPERATORnum << endl;
 }
 
 int main(int argc, char *argv[]) {
@@ -287,7 +287,7 @@ int main(int argc, char *argv[]) {
 
     if (argv[1] == NULL) {
         cout << "Recuerda que el nombre del archivo lo debes pasar como "
-                "par�metro"
+                "parámetro"
              << endl;
         return -1;
     }
@@ -300,12 +300,12 @@ int main(int argc, char *argv[]) {
     do {
         system("cls");
 
-        cout << "Men� principal" << endl;
+        cout << "Menú principal" << endl;
         cout << "1. Leer archivo" << endl;
         cout << "2. Mostrar datos clasificados" << endl;
         cout << "3. Mostrar tabla de contenido" << endl;
         cout << "4. Salir" << endl;
-        cout << "Ingrese la opci�n" << endl;
+        cout << "Ingrese la opción" << endl;
         cin >> op;
 
         switch (op) {
@@ -315,7 +315,7 @@ int main(int argc, char *argv[]) {
                 buf = readFile(path);
                 if (buf != "er") {
                     tokens = parse(buf);
-                    cout << "> Archivo " << path << " le�do correctamente\n"
+                    cout << "> Archivo " << path << " leído correctamente\n"
                          << endl;
                     printFile(buf);
                     system("pause");
@@ -332,13 +332,15 @@ int main(int argc, char *argv[]) {
             case 2:
                 system("cls");
                 if (tokens.empty()) {
-                    cout << "No se ha le�do ning�n archivo por el momento\n"
+                    cout << "No se ha leído ningún archivo por el momento\n"
                          << endl;
                 } else {
                     cout << "Token \t CODE \n";
                     for (Token t : tokens) {
                         cout << t.mText << "\t" << t.mType << "\n";
                     }
+                    cout << "\n";
+                    conteo(tokens);
                 }
                 system("pause");
                 break;
@@ -346,7 +348,7 @@ int main(int argc, char *argv[]) {
             case 3:
                 system("cls");
                 if (tokens.empty()) {
-                    cout << "No se ha le�do ning�n archivo por el momento\n"
+                    cout << "No se ha leído ningún archivo por el momento\n"
                          << endl;
                 } else {
                     cout << "Tablita" << endl;
@@ -360,13 +362,13 @@ int main(int argc, char *argv[]) {
                 cout << "El programa ha finalizado" << endl;
                 cout << "\nDesarrollado por:" << endl;
                 cout << " - Juan Sierra\n - Juan Bueno\n - Carlos Plaza\n - "
-                        "Santiago Guti�rrez\n - Diego Ochoa\n - Daniel Hilari�n"
+                        "Santiago Gutiérrez\n - Diego Ochoa\n - Daniel Hilarión"
                      << endl;
                 break;
 
             default:
                 system("cls");
-                cout << "Revise que lo ingresado sea uno de los n�meros de las "
+                cout << "Revise que lo ingresado sea uno de los números de las "
                         "opciones del men�\n"
                      << endl;
                 system("pause");

@@ -2,6 +2,8 @@
 
 using namespace std;
 
+// una aplicacion basica
+
 int main() {
     cout << "Hello, world!" << endl;
     double d = 8.2;
