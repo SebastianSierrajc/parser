@@ -216,18 +216,64 @@ string readFile(string path) {
 void printFile(string ss) { cout << ss; }
 
 int main(int argc, char *argv[]) {
-    string path = argv[1];
-    string buf;
-    vector<Token> tokens;
-    buf = readFile(path);
-    tokens = parse(buf);
-
-    printFile(buf);
-
-    cout << "Token \t CODE \n";
-    for (Token t : tokens) {
-        cout << t.mText << "\t " << t.mType << "\n";
-    }
-
+	
+	setlocale(LC_CTYPE, "Spanish");
+	int op;
+	string path, buf;
+	vector<Token> tokens;
+	bool seguir = true;
+	
+	do{
+		system("cls");
+			
+		cout<<"Menú principal"<<endl;
+		cout<<"1. Leer archivo"<<endl;
+		cout<<"2. Mostrar datos clasificados"<<endl;
+		cout<<"3. Mostrar tabla de contenido"<<endl;
+		cout<<"4. Salir"<<endl;
+		cout<<"Ingrese la opción"<<endl;
+		cin>>op;
+		
+		switch(op) {
+			case 1:
+				system("cls");
+				path = argv[1];
+    			buf = readFile(path);
+    			tokens = parse(buf);
+    			cout<<"> Archivo "<<path<<" leído correctamente\n"<<endl;
+    			printFile(buf);
+				system("pause");
+				break;
+				
+			case 2:
+				system("cls");
+				cout << "Token \t CODE \n";
+			    for (Token t : tokens) {
+			        cout << t.mText << "\t" << t.mType << "\n";
+			    }
+				system("pause");
+				break;
+				
+			case 3:
+				system("cls");
+				system("pause");
+				break;
+				
+			case 4:
+				system("cls");
+				seguir = false;
+				cout<<"El programa ha finalizado"<<endl;
+				cout<<"\nDesarrollado por:"<<endl;
+				cout<<" - Juan Sierra\n - Juan Bueno\n - Carlos Plaza\n - Santiago Gutiérrez\n - Diego Ochoa\n - Daniel Hilarión"<<endl;
+				break;
+				
+			default:
+				system("cls");
+				cout<<"Revise que lo ingresado sea uno de los números de las opciones del menú\n"<<endl;
+				system("pause");
+				break;
+		}
+	}while (seguir);
+	
     return 0;
 }
