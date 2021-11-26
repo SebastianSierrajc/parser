@@ -208,9 +208,13 @@ vector<Token> parse(const string &inProgram) {
 
 string readFile(string path) {
     ifstream file(path);
-    stringstream ss;
-    ss << file.rdbuf();
-    return ss.str();
+    if (file.is_open()) {
+    	stringstream ss;
+	    ss << file.rdbuf();
+	    return ss.str();
+	} else {
+		return "er";
+	}
 }
 
 void printFile(string ss) { cout << ss; }
@@ -218,6 +222,12 @@ void printFile(string ss) { cout << ss; }
 int main(int argc, char *argv[]) {
 	
 	setlocale(LC_CTYPE, "Spanish");
+	
+	if (argv[1] == NULL) {
+		cout<<"Recuerda que el nombre del archivo lo debes pasar como parámetro"<<endl;
+		return -1;
+	}
+	
 	int op;
 	string path, buf;
 	vector<Token> tokens;
@@ -239,23 +249,38 @@ int main(int argc, char *argv[]) {
 				system("cls");
 				path = argv[1];
     			buf = readFile(path);
-    			tokens = parse(buf);
-    			cout<<"> Archivo "<<path<<" leído correctamente\n"<<endl;
-    			printFile(buf);
-				system("pause");
+    			if (buf != "er"){
+    				tokens = parse(buf);
+	    			cout<<"> Archivo "<<path<<" leído correctamente\n"<<endl;
+	    			printFile(buf);
+					system("pause");
+				} else {
+					cout<<"No se ha encontrado el archivo "<<path<<", revise el argumento ingresado y vuelva a correr el programa\n"<<endl;
+					system("pause");
+				}
+    			
 				break;
 				
 			case 2:
 				system("cls");
-				cout << "Token \t CODE \n";
-			    for (Token t : tokens) {
-			        cout << t.mText << "\t" << t.mType << "\n";
-			    }
+				if (tokens.empty()) {
+					cout<<"No se ha leído ningún archivo por el momento\n"<<endl;
+				} else {
+					cout << "Token \t CODE \n";
+				    for (Token t : tokens) {
+				        cout << t.mText << "\t" << t.mType << "\n";
+				    }
+				}
 				system("pause");
 				break;
 				
 			case 3:
 				system("cls");
+				if (tokens.empty()) {
+					cout<<"No se ha leído ningún archivo por el momento\n"<<endl;
+				} else {
+					cout<<"Tablita"<<endl;
+				}
 				system("pause");
 				break;
 				
