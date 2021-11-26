@@ -2,9 +2,9 @@
 
 +         TIPO                     CANTIDAD  +
 
-+        KeyWord                       0     +
++        KeyWord                       7     +
 
-+        Identifiers                   21    +
++        Identifiers                   14    +
 
 +        Integer_Literal               3     +
 
@@ -22,11 +22,11 @@ include	2
 <	6
 iostream	2
 >	6
-using	2
-namespace	2
+using	1
+namespace	1
 std	2
 ;	6
-int	2
+int	1
 main	2
 (	6
 )	6
@@ -39,17 +39,17 @@ cout	2
 <	6
 endl	2
 ;	6
-double	2
+double	1
 d	2
 =	6
 8.2	4
 ;	6
-int	2
+int	1
 a	2
 =	6
 5	3
 ;	6
-int	2
+int	1
 c	2
 =	6
 6	3
@@ -69,13 +69,13 @@ a	2
 "
 "	5
 ;	6
-return	2
+return	1
 0	2
 ;	6
 }	6
-Cantidad de 'KeyWord' --->0
+Cantidad de 'KeyWord' --->7
 
-Cantidad de 'Identifiers' --->21
+Cantidad de 'Identifiers' --->14
 
 Cantidad de 'Integer_Literal' --->3
 
