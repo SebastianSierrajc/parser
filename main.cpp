@@ -54,13 +54,14 @@ class Token {
 void endToken(Token &token, vector<Token> &tokens) {
     if (token.mType != WHITESPACE) {
         tokens.push_back(token);
-    } else if (token.mType == POTENTIAL_DOUBLE) {
+    }
+
+    if (token.mType == POTENTIAL_DOUBLE) {
         if (token.mText.compare(".") == 0) {
             token.mType = OPERATOR;
         } else {
             token.mType = DOUBLE_LITERAL;
         }
-        tokens.push_back(token);
     } else if (token.mType == IDENTIFIER) {
         if (keywords.find(token.mText) != keywords.end()) {
             token.mType = KEYWORD;
