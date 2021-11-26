@@ -45,13 +45,18 @@ enum TokenType {
     COMMENT
 };
 
+const vector<string> tokenTypeNames = {
+    "WHITESPACE",       "KEYWORD",           "IDENTIFIER", "INTERGER_LITERAL",
+    "DOUBLE_LITERAL",   "STRING_LITERAL",    "OPERATOR",   "ESCAPE_SEQ",
+    "POTENTIAL_DOUBLE", "POTENTIAL_COMMENT", "COMMENT"};
+
 class Token {
    public:
     enum TokenType mType { WHITESPACE };
     string mText;
-    size_t mStartOffset;
-    size_t mEndOffset{0};
     size_t mLineNumber{0};
+
+    void DebugPrint();
 };
 
 class Tokenizer {

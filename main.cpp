@@ -1,11 +1,12 @@
+#include <locale.h>
+
 #include <fstream>
 #include <iostream>
 #include <set>
 #include <sstream>
+#include <stdexcept>
 #include <string>
 #include <vector>
-#include <stdexcept>
-#include <locale.h>
 
 using namespace std;
 
@@ -42,19 +43,19 @@ enum TokenType {
     OPERATOR,
     ESCAPE_SEQ,
     POTENTIAL_DOUBLE,
+    POTENTIAL_COMMENT,
+    COMMENT
 };
 
 class Token {
    public:
     enum TokenType mType { WHITESPACE };
     string mText;
-    size_t mStartOffset;
-    size_t mEndOffset{0};
     size_t mLineNumber{0};
 };
 
 void endToken(Token &token, vector<Token> &tokens) {
-    if (token.mType != WHITESPACE) {
+    if (token.mType != WHITESPACE || token.mType != COMMENT) {
         tokens.push_back(token);
     }
 
@@ -110,6 +111,9 @@ vector<Token> parse(const string &inProgram) {
             cout << currentToken.mText << " " << currCh << "\n";
             escapeSeq(currCh, currentToken);
             continue;
+        } else if (currentToken.mType == POTENTIAL_COMMENT && currCh != '/') {
+            currentToken.mType = OPERATOR;
+            endToken(currentToken, tokens);
         }
 
         switch (currCh) {
@@ -149,9 +153,20 @@ vector<Token> parse(const string &inProgram) {
                 }
                 break;
 
+            case '/':  // comentarios
+                if (currentToken.mType == STRING_LITERAL) {
+                    currentToken.mText.push_back(currCh);
+                } else if (currentToken.mType == POTENTIAL_COMMENT) {
+                    currentToken.mType == COMMENT;
+                    currentToken.mText.erase();
+                } else {
+                    currentToken.mType = POTENTIAL_COMMENT;
+                    currentToken.mText.push_back(currCh);
+                }
+                break;
+
             case '!':
             case '#' ... '-':  // puntuadores
-            case '/':
             case ':' ... '?':  // operadores
             case '[':
             case ']':
@@ -217,64 +232,68 @@ string readFile(string path) {
 void printFile(string ss) { cout << ss; }
 
 int main(int argc, char *argv[]) {
-	
-	setlocale(LC_CTYPE, "Spanish");
-	int op;
-	string path, buf;
-	vector<Token> tokens;
-	bool seguir = true;
-	
-	do{
-		system("cls");
-			
-		cout<<"Menú principal"<<endl;
-		cout<<"1. Leer archivo"<<endl;
-		cout<<"2. Mostrar datos clasificados"<<endl;
-		cout<<"3. Mostrar tabla de contenido"<<endl;
-		cout<<"4. Salir"<<endl;
-		cout<<"Ingrese la opción"<<endl;
-		cin>>op;
-		
-		switch(op) {
-			case 1:
-				system("cls");
-				path = argv[1];
-    			buf = readFile(path);
-    			tokens = parse(buf);
-    			cout<<"> Archivo "<<path<<" leído correctamente\n"<<endl;
-    			printFile(buf);
-				system("pause");
-				break;
-				
-			case 2:
-				system("cls");
-				cout << "Token \t CODE \n";
-			    for (Token t : tokens) {
-			        cout << t.mText << "\t" << t.mType << "\n";
-			    }
-				system("pause");
-				break;
-				
-			case 3:
-				system("cls");
-				system("pause");
-				break;
-				
-			case 4:
-				system("cls");
-				seguir = false;
-				cout<<"El programa ha finalizado"<<endl;
-				cout<<"\nDesarrollado por:"<<endl;
-				cout<<" - Juan Sierra\n - Juan Bueno\n - Carlos Plaza\n - Santiago Gutiérrez\n - Diego Ochoa\n - Daniel Hilarión"<<endl;
-				break;
-				
-			default:
-				system("cls");
-				cout<<"Revise que lo ingresado sea uno de los números de las opciones del menú\n"<<endl;
-				system("pause");
-				break;
-		}
-	}while (seguir);
-	
+    setlocale(LC_CTYPE, "Spanish");
+    int op;
+    string path, buf;
+    vector<Token> tokens;
+    bool seguir = true;
+
+    do {
+        system("cls");
+
+        cout << "Menï¿½ principal" << endl;
+        cout << "1. Leer archivo" << endl;
+        cout << "2. Mostrar datos clasificados" << endl;
+        cout << "3. Mostrar tabla de contenido" << endl;
+        cout << "4. Salir" << endl;
+        cout << "Ingrese la opciï¿½n" << endl;
+        cin >> op;
+
+        switch (op) {
+            case 1:
+                system("cls");
+                path = argv[1];
+                buf = readFile(path);
+                tokens = parse(buf);
+                cout << "> Archivo " << path << " leï¿½do correctamente\n"
+                     << endl;
+                printFile(buf);
+                system("pause");
+                break;
+
+            case 2:
+                system("cls");
+                cout << "Token \t CODE \n";
+                for (Token t : tokens) {
+                    cout << t.mText << "\t" << t.mType << "\n";
+                }
+                system("pause");
+                break;
+
+            case 3:
+                system("cls");
+                system("pause");
+                break;
+
+            case 4:
+                system("cls");
+                seguir = false;
+                cout << "El programa ha finalizado" << endl;
+                cout << "\nDesarrollado por:" << endl;
+                cout << " - Juan Sierra\n - Juan Bueno\n - Carlos Plaza\n - "
+                        "Santiago Gutiï¿½rrez\n - Diego Ochoa\n - Daniel Hilariï¿½n"
+                     << endl;
+                break;
+
+            default:
+                system("cls");
+                cout << "Revise que lo ingresado sea uno de los nï¿½meros de las "
+                        "opciones del menï¿½\n"
+                     << endl;
+                system("pause");
+                break;
+        }
+    } while (seguir);
+
     return 0;
 }

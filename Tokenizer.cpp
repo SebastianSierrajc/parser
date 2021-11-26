@@ -17,6 +17,9 @@ vector<Token> Tokenizer::parse(const string &inProgram) {
         if (currentToken.mType == ESCAPE_SEQ) {
             escapeSeq(currCh, currentToken);
             continue;
+        } else if (currentToken.mType == POTENTIAL_COMMENT && currCh != '/') {
+            currentToken.mType = OPERATOR;
+            endToken(currentToken, tokens);
         }
 
         switch (currCh) {
@@ -172,6 +175,11 @@ void Tokenizer::escapeSeq(char c, Token &token) {
     }
 
     token.mType = STRING_LITERAL;
+}
+
+void Token::DebugPrint() {
+    cout << "Token( " << mLineNumber << ". " << tokenTypeNames[mType] << ", \""
+         << mText << "\") \n";
 }
 
 }  // namespace simpleparser
