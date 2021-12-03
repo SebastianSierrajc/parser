@@ -56,7 +56,7 @@ class Token {
     string mText;
     size_t mLineNumber{0};
 
-    void DebugPrint();
+    void debugPrint();
 };
 
 class Tokenizer {

@@ -187,7 +187,7 @@ void Tokenizer::escapeSeq(char c, Token &token) {
     token.mType = STRING_LITERAL;
 }
 
-void Token::DebugPrint() {
+void Token::debugPrint() {
     cout << "Token( " << mLineNumber << ". " << tokenTypeNames[mType] << ", \""
          << mText << "\") \n";
 }

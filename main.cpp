@@ -430,7 +430,7 @@ int main(int argc, char *argv[]) {
                 system("cls");
                 cout << "Token \t CODE \n";
                 for (Token t : tokens) {
-                    cout << t.mText << "\t" << t.mType << "\n";
+                    cout << "Token ( " << t.mText << "\t" << t.mType << " )\n";
                 }
                 conteo2(tokens);
                 system("pause");

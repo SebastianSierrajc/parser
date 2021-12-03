@@ -3,20 +3,20 @@
 # *****************************************************
 # Variables to control Makefile operation
  
-CC = g++
-CFLAGS = -Wall -g
+GCC = g++
+PROGRAMS = MainParser Tokenizer
  
 # ****************************************************
 # Targets needed to bring the executable up to date
  
-main: main.o Point.o Square.o
-    $(CC) $(CFLAGS) -o main main.o Point.o Square.o
- 
-# The main.o target can be written more simply
- 
-main.o: main.cpp Point.h Square.h
-    $(CC) $(CFLAGS) -c main.cpp
- 
-Point.o: Point.h
- 
-Square.o: Square.h Point.h
+main: MainParser.o Tokenizer.o
+	$(GCC) MainParser.o Tokenizer.o -o MainParser.out
+
+MainParser.o: MainParser.cpp
+	$(GCC) -c MainParser.cpp
+
+Tokenizer.o: Tokenizer.cpp
+	$(GCC) -c Tokenizer.cpp
+
+clean:
+	$(RM)  *.o *.out

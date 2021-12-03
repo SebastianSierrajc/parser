@@ -21,11 +21,14 @@ void printFile(string ss) { cout << ss; }
 int main(int argc, char *argv[]) {
     Tokenizer tokenizer;
     string path, buf;
+    path = argv[1];
     buf = readFile(path);
 
     vector<Token> tokens = tokenizer.parse(buf);
 
     for (Token token : tokens) {
-        token.DebugPrint();
+        token.debugPrint();
     }
+
+    return 0;
 }

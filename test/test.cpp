@@ -6,6 +6,7 @@ using namespace std;
 
 int main() {
     cout << "Hello, world!" << endl;
+
     double d = 8.2;
     int a = 5;
     int c = 6;
