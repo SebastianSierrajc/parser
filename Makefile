@@ -4,16 +4,16 @@
 # Variables to control Makefile operation
  
 GCC = g++
-PROGRAMS = MainParser Tokenizer
+PROGRAMS = main Tokenizer
  
 # ****************************************************
 # Targets needed to bring the executable up to date
  
-main: MainParser.o Tokenizer.o
-	$(GCC) MainParser.o Tokenizer.o -o MainParser.out
+main: main.o Tokenizer.o
+	$(GCC) main.o Tokenizer.o -o main.out
 
-MainParser.o: MainParser.cpp
-	$(GCC) -c MainParser.cpp
+main.o: main.cpp
+	$(GCC) -c main.cpp
 
 Tokenizer.o: Tokenizer.cpp
 	$(GCC) -c Tokenizer.cpp
